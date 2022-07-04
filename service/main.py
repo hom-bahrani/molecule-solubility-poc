@@ -3,6 +3,7 @@ import boto3
 import os
 import deepchem as dc
 import h5py
+from rdkit import Chem
 
 app = FastAPI(title="Molecule Solubility Service")
 
@@ -36,17 +37,31 @@ async def get_message(request: Request):
     
     # save model
     print("Saving model")
-    print(model.summary())
-    model.save('molecule_solubility.h5')
+    model.save_checkpoint(model_dir='model/')
     
-    # upload to S3
-    s3_path = f'models/{filename}'
-    s3 = boto3.resource("s3")
-    s3.Object(s3_bucket_name, s3_path).put(Body=open('molecule_solubility.h5', 'rb'))
+    # TODO: persist model in S3 as fargate storage is ephemeral     
+    # s3_path = f'models/{filename}'
+    # s3 = boto3.resource("s3")
+    # s3.Object(s3_bucket_name, s3_path).put(Body=open('molecule_solubility.h5', 'rb'))
+    return {"status": "model trained"}
 
 @app.post("/predict")
 async def get_message(request: Request):
     body = await request.json()
-    print(body['url'])
-    print(body['bucketName'])
-    return body
+    
+    smiles = body['smiles']
+    mols = [Chem.MolFromSmiles(s) for s in smiles]
+    
+    featurizer = dc.feat.ConvMolFeaturizer()
+    x = featurizer.featurize(mols)
+    
+    model = dc.models.GraphConvModel(n_tasks=1, mode='regression', dropout=0.2, model_dir='model/')
+    model.restore()
+    
+    predicted_solubility = model.predict_on_batch(x)
+    
+    sol_values = {}    
+    for m,s in zip(smiles, predicted_solubility):
+        sol_values[m] = s.tolist()[0]
+    
+    return sol_values
