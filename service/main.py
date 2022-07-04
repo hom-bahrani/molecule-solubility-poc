@@ -10,7 +10,7 @@ app = FastAPI(title="Molecule Solubility Service")
 
 @app.get("/")
 def get_message():
-    return {"message": "hello..."}
+    return {"test": "ok"}
 
 @app.post("/train")
 async def get_message(request: Request):
@@ -38,11 +38,7 @@ async def get_message(request: Request):
     # save model
     print("Saving model")
     model.save_checkpoint(model_dir='model/')
-    
-    # TODO: persist model in S3 as fargate storage is ephemeral     
-    # s3_path = f'models/{filename}'
-    # s3 = boto3.resource("s3")
-    # s3.Object(s3_bucket_name, s3_path).put(Body=open('molecule_solubility.h5', 'rb'))
+
     return {"status": "model trained"}
 
 @app.post("/predict")
