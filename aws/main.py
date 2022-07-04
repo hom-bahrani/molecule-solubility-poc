@@ -71,9 +71,6 @@ class MoleculeSolubilityPocStack(Stack):
         
         container = task_definition.add_container('molecule_solubility_app',
             image=image,
-            environment={
-                "TIMEOUT": 300,
-            },
             logging=ecs.LogDriver.aws_logs(
                 stream_prefix='ecs',
                 log_group=logs.LogGroup(
