@@ -62,8 +62,8 @@ class MoleculeSolubilityPocStack(Stack):
         
         task_definition = ecs.FargateTaskDefinition(self, 
                                                     'MoleculeSolubilityDemoServiceTask',
-                                                    cpu=1024,
-                                                    memory_limit_mib=2048, 
+                                                    cpu=4096,
+                                                    memory_limit_mib=8192, 
                                                     family='MoleculeSolubilityDemoServiceTask',
                                                     task_role=role,)
         
@@ -71,6 +71,9 @@ class MoleculeSolubilityPocStack(Stack):
         
         container = task_definition.add_container('molecule_solubility_app',
             image=image,
+            environment={
+                "TIMEOUT": 300,
+            },
             logging=ecs.LogDriver.aws_logs(
                 stream_prefix='ecs',
                 log_group=logs.LogGroup(
