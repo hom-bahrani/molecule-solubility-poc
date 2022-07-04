@@ -3,7 +3,7 @@ import os
 
 import aws_cdk as cdk
 
-from molecule_solubility_poc.molecule_solubility_poc_stack import MoleculeSolubilityPocStack
+from aws.main import MoleculeSolubilityPocStack
 
 
 app = cdk.App()

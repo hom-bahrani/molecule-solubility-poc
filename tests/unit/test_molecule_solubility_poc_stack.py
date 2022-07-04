@@ -1,7 +1,7 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
-from molecule_solubility_poc.molecule_solubility_poc_stack import MoleculeSolubilityPocStack
+from aws.main import MoleculeSolubilityPocStack
 
 # example tests. To run these tests, uncomment this file along with the example
 # resource in molecule_solubility_poc/molecule_solubility_poc_stack.py
